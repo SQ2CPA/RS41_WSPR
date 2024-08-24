@@ -1,0 +1,1 @@
+openocd -f ./openocd_rs41.cfg -c "program build/src/RS41ng.elf verify reset exit"
