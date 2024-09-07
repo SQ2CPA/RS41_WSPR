@@ -24,8 +24,7 @@ uint8_t *getBuffer()
     return txBuffer;
 }
 
-uint8_t
-si5351_write_bulk(uint8_t addr, uint8_t bytes, uint8_t *data)
+uint8_t si5351_write_bulk(uint8_t addr, uint8_t bytes, uint8_t *data)
 {
     return i2c_write_bytes(port, i2c_bus_addr, addr, bytes, data);
 }
@@ -35,13 +34,13 @@ uint8_t si5351_write(uint8_t addr, uint8_t data)
     return i2c_write_byte(port, i2c_bus_addr, addr, data);
 }
 
-uint8_t si5351_read(uint8_t addr)
+int si5351_read(uint8_t addr)
 {
     uint8_t value;
 
     if (i2c_read_byte(port, i2c_bus_addr, addr, &value) != HAL_OK)
     {
-        return 0;
+        return -1;
     }
 
     return value;
@@ -178,20 +177,17 @@ void si5351_disable()
 
 int si5351_initialize()
 {
-    uint32_t timeout = 0xFFFFFF;
+    int status_reg = si5351_read(SI5351_DEVICE_STATUS);
 
-    uint8_t status_reg = 0;
-    do
+    if (status_reg == -1)
     {
-        status_reg = si5351_read(SI5351_DEVICE_STATUS);
-    } while (status_reg >> 7 == 1 && timeout-- > 0);
-
-    if (timeout == 0)
-    {
-        return 0;
+        return -1;
     }
 
-    si5351_disable();
+    if (status_reg >> 7 == 1)
+    {
+        return -2;
+    }
 
     return 1;
 }
@@ -576,7 +572,7 @@ uint8_t wspr_isInTimeslot(int minute, int second)
 
     if (minute % 10 == 8) // TX at 8 0
     {
-        if (second > 56)
+        if (second >= 58)
         {
             return 1;
         }
@@ -584,7 +580,7 @@ uint8_t wspr_isInTimeslot(int minute, int second)
 
     if (minute % 10 == 4) // TX at 4 6
     {
-        if (second > 56)
+        if (second >= 58)
         {
             return 1;
         }

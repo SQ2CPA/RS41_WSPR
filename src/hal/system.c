@@ -70,11 +70,47 @@ static void gpio_init()
 
     GPIO_InitTypeDef gpio_init;
 
-    // LEDs
-    gpio_init.GPIO_Pin = GPIO_PIN_LED_GREEN | GPIO_PIN_LED_RED;
+    // GPS power at PB4 PB5 PB6 PB7
+    gpio_init.GPIO_Pin = GPIO_Pin_4;
     gpio_init.GPIO_Mode = GPIO_Mode_Out_PP;
     gpio_init.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOB, &gpio_init);
+
+    gpio_init.GPIO_Pin = GPIO_Pin_5;
+    gpio_init.GPIO_Mode = GPIO_Mode_Out_PP;
+    gpio_init.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &gpio_init);
+
+    gpio_init.GPIO_Pin = GPIO_Pin_6;
+    gpio_init.GPIO_Mode = GPIO_Mode_Out_PP;
+    gpio_init.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &gpio_init);
+
+    gpio_init.GPIO_Pin = GPIO_Pin_7;
+    gpio_init.GPIO_Mode = GPIO_Mode_Out_PP;
+    gpio_init.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &gpio_init);
+
+    // SI5351+TXCO power at 
+    gpio_init.GPIO_Pin = GPIO_Pin_1;
+    gpio_init.GPIO_Mode = GPIO_Mode_Out_PP;
+    gpio_init.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &gpio_init);
+
+    gpio_init.GPIO_Pin = GPIO_Pin_2;
+    gpio_init.GPIO_Mode = GPIO_Mode_Out_PP;
+    gpio_init.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &gpio_init);
+
+    gpio_init.GPIO_Pin = GPIO_Pin_3;
+    gpio_init.GPIO_Mode = GPIO_Mode_Out_PP;
+    gpio_init.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &gpio_init);
+
+    gpio_init.GPIO_Pin = GPIO_Pin_4;
+    gpio_init.GPIO_Mode = GPIO_Mode_Out_PP;
+    gpio_init.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &gpio_init);
 }
 
 /**
@@ -186,15 +222,6 @@ void system_enable_tick()
     TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
     NVIC_EnableIRQ(TIM4_IRQn);
     TIM_Cmd(TIM4, ENABLE);
-}
-
-void system_set_green_led(bool enabled)
-{
-    if (enabled) {
-        GPIO_ResetBits(GPIOB, GPIO_PIN_LED_GREEN);
-    } else {
-        GPIO_SetBits(GPIOB, GPIO_PIN_LED_GREEN);
-    }
 }
 
 void system_disable_irq()

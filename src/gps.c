@@ -23,6 +23,8 @@ uint16_t gps_buffer_index = 0;
 
 int hours, minutes, seconds, milliseconds;
 
+int lastMinutes = -1;
+
 void gps_init(void) {
     GPIO_InitTypeDef GPIO_InitStructure;
     USART_InitTypeDef USART_InitStructure;
@@ -46,8 +48,6 @@ void gps_init(void) {
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
     USART_Init(USART1, &USART_InitStructure);
-
-    USART_Cmd(USART1, ENABLE);
 }
 
 void gps_encode(void) {
@@ -58,6 +58,12 @@ void gps_encode(void) {
     if (strstr(gps_buffer, "$GNGGA") != NULL) {   
         sscanf(gps_buffer, "$GNGGA,%10[^,],%2d%2d.%2d%*[^,],%c,%3d%2d.%2d%*[^,],%c,%d,%d,%*[^,],%ld", raw_time, &dd_lat, &mm_lat, &last_mm_lat, &direction_lat, &dd_long, &mm_long, &last_mm_long, &direction_long, &quality_indicator, &satellites, &altitude);
         sscanf(raw_time, "%2d%2d%2d.%3d", &hours, &minutes, &seconds, &milliseconds);
+    }
+
+    if (lastMinutes != -1) {
+        if (lastMinutes == minutes) {
+            minutes = -1;
+        }
     }
 }
 
@@ -103,9 +109,27 @@ int gps_getMinutes() {
     return minutes;
 }
 
+void gps_set_time(int minute, int second) {
+    minutes = minute;
+    seconds = second;
+}
+
 void gps_flush() {
+    lastMinutes = minutes;
+
     seconds = -1;
     minutes = -1;
+    satellites = -1;
+
+    dd_lat = 0;
+    mm_lat = 0;
+    last_mm_lat = 0;
+    direction_lat = 'N';
+
+    dd_long = 0;
+    mm_long = 0;
+    last_mm_long = 0;
+    direction_long = 'E';
 }
 
 int gps_getMilliseconds() {

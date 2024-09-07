@@ -20,5 +20,6 @@ void gps_flush();
 int gps_getMinutes();
 uint8_t gps_hasFix();
 uint32_t gps_getAltitude();
+void gps_set_time(int minute, int second);
 
 #endif
