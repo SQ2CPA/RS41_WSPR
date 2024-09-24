@@ -358,8 +358,34 @@ uint32_t wspr_call_hash(const char *call)
     {
         CallWithSuPrefix[Length] = '/';
 
-        CallWithSuPrefix[Length + 1] = '0' + CONFIG_WSPR_SUFFIX;
-        CallWithSuPrefix[Length + 2] = 0;
+        if (CONFIG_WSPR_SUFFIX < 36)
+        {
+            CallWithSuPrefix[Length + 2] = 0;
+
+            if (CONFIG_WSPR_SUFFIX < 10)
+            {
+                CallWithSuPrefix[Length + 1] = '0' + CONFIG_WSPR_SUFFIX; // Single digit 0-9
+            }
+            else
+            {
+                CallWithSuPrefix[Length + 1] = 'A' + (CONFIG_WSPR_SUFFIX - 10); // Single letter A-Z
+            }
+        }
+        else
+        {
+            uint8_t n = CONFIG_WSPR_SUFFIX - 36; // Double digit 10-99
+            uint8_t t = 1;
+
+            while (n > 9)
+            {
+                ++t;
+                n -= 10;
+            }
+
+            CallWithSuPrefix[Length + 1] = '0' + t;
+            CallWithSuPrefix[Length + 2] = '0' + n;
+            CallWithSuPrefix[Length + 3] = 0;
+        }
     }
 #endif
 
