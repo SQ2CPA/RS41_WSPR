@@ -1,5 +1,7 @@
 # Software for WSPR Tracker based on components from RS41 radiosonde
 
+## Check my parts list [here](https://github.com/SQ2CPA/parts)
+
 The goal of this project is to show that you can use some components from RS41 radiosonde in your own trackers.
 
 ## Used components from RS41
