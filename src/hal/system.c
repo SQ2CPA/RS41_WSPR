@@ -32,8 +32,6 @@ static void nvic_init()
 #endif
 }
 
-// TODO: Find out how to configure watchdog!
-
 static void rcc_init()
 {
     RCC_DeInit();
@@ -41,7 +39,6 @@ static void rcc_init()
 
     ErrorStatus hse_status = RCC_WaitForHSEStartUp();
     if (hse_status != SUCCESS) {
-        // If HSE fails to start up, the application will have incorrect clock configuration.
         while (true) {}
     }
     //SystemInit();
@@ -49,11 +46,12 @@ static void rcc_init()
     FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
     FLASH_SetLatency(FLASH_Latency_0);
 
-    // TODO: Check what the delay timer TIM3 settings really should be and WTF the clock tick really is!?!?!?
+    // RCC_HCLKConfig(RCC_SYSCLK_Div1); // 24 MHz
+    RCC_HCLKConfig(RCC_SYSCLK_Div4); // 6 MHz
 
-    RCC_HCLKConfig(RCC_SYSCLK_Div1); // Was: RCC_SYSCLK_Div4
-    RCC_PCLK2Config(RCC_HCLK_Div1); // Was: 4
-    RCC_PCLK1Config(RCC_HCLK_Div1); // Was: 2
+    RCC_PCLK1Config(RCC_HCLK_Div1);
+    RCC_PCLK2Config(RCC_HCLK_Div1);
+
     RCC_SYSCLKConfig(RCC_SYSCLKSource_HSE);
 
     while (RCC_GetSYSCLKSource() != 0x04);
@@ -187,7 +185,8 @@ void system_scheduler_timer_init()
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
     RCC_APB1PeriphResetCmd(RCC_APB1Periph_TIM4, DISABLE);
 
-    tim_init.TIM_Prescaler = 24 - 1; // tick every 1/1000000 s
+    // tim_init.TIM_Prescaler = 24 - 1; // tick every 1/1000000 s 24 MHz
+    tim_init.TIM_Prescaler = 6 - 1; // tick every 1/1000000 s 6 MHz
     tim_init.TIM_CounterMode = TIM_CounterMode_Up;
     tim_init.TIM_Period = 100 - 1; // update every 1/10000 s
     tim_init.TIM_ClockDivision = TIM_CKD_DIV1;
